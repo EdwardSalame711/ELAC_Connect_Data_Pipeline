@@ -5,7 +5,7 @@ const attention = [
   ['Duplicate Attendance Record','STEM Center','1','Resolve'],['Duplicate Attendance Record','STEM Center','2','Merge']
 ];
 const validation = Array.from({length:7},(_,i)=>({center:i===1?'Writing Format':'Math Lab',name:i>2?'(jdoe@elac.edu)':'J. Doe<br>(jdoe@elac.edu)',resolved:false}));
-const missing = [
+let missing = [
   ['Extreme Hours','Extreme Center','J. Doe<br>(jdoe@elac.edu)','72.0 Hrs.','[Needs Director<br>Verification]','anomaly','hours'],
   ['Duplicate Record','Math Lab','J. Doe<br>(jdoe@elac.edu)','1.5 Hrs.','[Select and<br>Merge]','timestamp<br>conflict','duplicate'],
   ['Mismatched ID','Extreme Center','J. Doe<br>(jdoe@elac.edu)','72.0 Hrs.','No Match Found<br>(Roster/Cranium)','Verify','id'],
@@ -25,8 +25,12 @@ function render(){
   $('#exportRows').innerHTML=cleaned.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
 }
 function drawMissing(filter){
-  const rows=missing.filter(r=>filter==='all'||r[6]===filter);
-  $('#missingRows').innerHTML=rows.map((r,i)=>`<tr class="${i===2?'selected':''}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${['Verify','Edit ID'].includes(r[5])?`<button class="row-action">${r[5]}</button>`:`<span class="tag">${r[5]}</span>`}</td></tr>`).join('');
+  const rows=missing.map((r,index)=>({r,index})).filter(({r})=>filter==='all'||r[6]===filter);
+  $('#missingRows').innerHTML=rows.map(({r,index})=>`<tr class="${index===2?'selected':''}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${renderDurationCell(r,index)}</td><td>${r[4]}</td><td>${['Verify','Edit ID'].includes(r[5])?`<button class="row-action">${r[5]}</button>`:`<span class="tag">${r[5]}</span>`}</td></tr>`).join('');
+}
+function renderDurationCell(row,index){
+  if(!/^72(?:\.0)? Hrs\./.test(row[3]))return row[3];
+  return `<div class="duration-actions"><strong>${row[3]}</strong><button class="fix-hours" data-index="${index}">FIX HOURS</button><button class="delete-record" data-index="${index}">DELETE</button></div>`;
 }
 function showScreen(id){
   $$('.screen').forEach(s=>s.classList.toggle('active',s.id===id));
@@ -39,7 +43,28 @@ function toast(text){const t=document.createElement('div');t.className='toast';t
 document.addEventListener('click',e=>{
   if(e.target.closest('.import-trigger')){e.preventDefault();openImportModal();return;}
   const nav=e.target.closest('[data-screen]');if(nav)showScreen(nav.dataset.screen);
-  const confirm=e.target.closest('.confirm');if(confirm){validation[+confirm.dataset.index].resolved=true;render();toast('Student ID corrected successfully.');}
+  const confirmButton=e.target.closest('.confirm');if(confirmButton){validation[+confirmButton.dataset.index].resolved=true;render();toast('Student ID corrected successfully.');}
+  const fixHours=e.target.closest('.fix-hours');
+  if(fixHours){
+    const index=+fixHours.dataset.index;
+    const current=parseFloat(missing[index][3]);
+    const next=prompt('Enter corrected logged hours:',Number.isFinite(current)?current.toFixed(1):'');
+    if(next===null)return;
+    const value=Number(next);
+    if(!Number.isFinite(value)||value<0){toast('Please enter a valid hour amount.');return;}
+    missing[index][3]=`${value.toFixed(1)} Hrs.`;
+    missing[index][5]='hours fixed';
+    drawMissing($('#missingFilter').value);
+    toast('Logged hours updated.');
+  }
+  const deleteRecord=e.target.closest('.delete-record');
+  if(deleteRecord){
+    const index=+deleteRecord.dataset.index;
+    if(!window.confirm('Delete this record from the missing records queue?'))return;
+    missing.splice(index,1);
+    drawMissing($('#missingFilter').value);
+    toast('Record deleted.');
+  }
 });
 function openImportModal(){
   $('#importModal').hidden=false;

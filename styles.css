@@ -100,3 +100,17 @@
   table{min-width:760px}
   .screen .card h2{font-size:24px}
 }
+
+@media(min-width:761px){
+  .topbar-actions span:last-child{display:inline}
+}
+
+.duration-actions{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.duration-actions strong{flex-basis:100%;font-weight:500}
+.fix-hours,.delete-record{border:0;border-radius:7px;color:#fff;cursor:pointer;font:700 15px/1.1 inherit;padding:8px 10px}
+.fix-hours{background:#2f6695}
+.delete-record{background:#a8332f}
+.fix-hours:hover{background:#24527a}
+.delete-record:hover{background:#872a27}
+
+.export-button{font-size:34px;font-weight:700;letter-spacing:.02em;line-height:1.15;text-transform:uppercase}
