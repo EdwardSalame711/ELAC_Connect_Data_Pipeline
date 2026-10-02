@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ELAC Connect: Data Pipeline</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="import-modal.css" />
+</head>
+<body>
+  <header class="topbar">
+    <button class="mobile-menu" id="menuButton" aria-label="Open navigation">☰</button>
+    <div class="topbar-brand">ELAC Connect: Data Pipeline</div>
+    <div class="topbar-actions"><span aria-hidden="true">⌕</span><span aria-hidden="true">♧</span><span>East Los Angeles College</span></div>
+  </header>
+
+  <aside class="sidebar" id="sidebar">
+    <button class="logo" data-screen="dashboard" aria-label="ELAC dashboard">
+      <img src="assets/elac-logo.png" alt="East Los Angeles College Husky logo">
+    </button>
+    <nav>
+      <button class="nav-item active" data-screen="dashboard"><span>⌂</span>Dashboard</button>
+      <div class="nav-heading"><span>⌘</span>Data Pipeline <span class="chevron">⌃</span></div>
+      <button class="nav-sub import-trigger">Import Penji</button>
+      <button class="nav-sub" data-screen="validation">Validate</button>
+      <button class="nav-sub" data-screen="missing">Transform</button>
+      <button class="nav-item" data-screen="export"><span>▥</span>Reports</button>
+      <button class="nav-item"><span>⚙</span>Admin</button>
+    </nav>
+    <button class="stage-tile danger" data-screen="missing"><span>⊖</span> M. Records</button>
+    <button class="stage-tile success" data-screen="export"><span>✓</span> Data Export &amp;<br>Cleaned Data</button>
+  </aside>
+
+  <main class="app-shell">
+    <div class="breadcrumb" id="breadcrumb">ELAC Connect: Data Pipeline</div>
+
+    <section class="screen active" id="dashboard">
+      <div class="page-title-row">
+        <h1>Positive Attendance Reporting: Fall 2026 Cycle</h1>
+        <div class="status-pill">System Status: All Systems Operational</div>
+      </div>
+      <article class="card pipeline-card">
+        <h2>Data Pipeline Overview</h2>
+        <div class="pipeline">
+          <button class="pipeline-step complete import-trigger"><span>⇧</span><b>1. Import Penji</b><small id="importStepStatus">Select dirty CSV file</small></button>
+          <i>→</i>
+          <button class="pipeline-step warning" data-screen="validation"><span>△</span><b>2. Automated Validation</b><small>(Warning - 3 Errors)</small></button>
+          <i>→</i>
+          <button class="pipeline-step pending" data-screen="missing"><span>⌘</span><b>3. Data Cleaning</b><small>(Pending)</small></button>
+          <i>→</i>
+          <button class="pipeline-step pending" data-screen="export"><span>◴</span><b>4. OIEA/A&amp;R Export</b><small>(Pending)</small></button>
+        </div>
+      </article>
+      <div class="dashboard-grid">
+        <article class="card table-card">
+          <div class="card-header"><h2>“Needs Attention” Queue</h2><button class="primary" data-screen="validation">Resolve Errors</button></div>
+          <div class="table-scroll"><table><thead><tr><th>Error Type</th><th>Location (Center)</th><th>Details</th><th>Action Required</th></tr></thead><tbody id="attentionRows"></tbody></table></div>
+        </article>
+        <aside class="stats"><h2>Quick Stats Panel</h2><div class="stat-card">Total Students Tracked<strong>14,320</strong></div><div class="stat-card">Total Hours Logged<strong>98,500</strong></div><div class="stat-card gauge-card">Funding Compliance<div class="gauge"><span>86%</span></div><b>(Deadline in 14 Days)</b></div></aside>
+      </div>
+    </section>
+
+    <section class="screen" id="validation">
+      <div class="page-title-row"><h1>Data Pipeline Queue</h1><div class="stage-progress"><span></span><b>Stage 2: Validation &amp; Review<small>(3 Issues Found)</small></b><i></i></div></div>
+      <div class="workspace-grid">
+        <article class="card table-card">
+          <div class="card-header"><h2>“Needs Attention” Records (Automated 1st Pass)</h2><button class="primary" id="resolveAll">Resolve Errors</button></div>
+          <label class="filter-label">Error Type: <select id="validationFilter"><option>Show Incomplete IDs</option><option>Show All Issues</option></select></label>
+          <div class="table-scroll validation-table"><table><thead><tr><th>Source<br>(Center)</th><th>Original Record<br>(Name/Email)</th><th>Error Flag</th><th>Suggested Fix</th></tr></thead><tbody id="validationRows"></tbody></table></div>
+        </article>
+        <aside class="card resolution-panel"><h2>Resolution Workspace</h2><div class="panel-body"><h3>Selected Record Details</h3><div class="compare"><div>Original Penji Data<strong>J. Doe<br>(jdoe@elac.edu)<br>Record ID:<br>(digits: 12345678)</strong></div><div>Cross-Reference<strong>J. Doe<br>(jdoe@elac.edu)<br><em>Correct ID:<br>123456789</em></strong></div></div><hr><div class="lookup-tabs"><b>[Roster Lookup]</b><span>[Cranium Cafe Lookup]</span><span>[Penji Historical]</span></div><div class="lookup-result"><b>jdoe@elac.edu</b><span>Found 1 Match</span><strong>Correct ID: 123456789</strong></div><button class="wide-action" id="updateRecords">Update Selected Records (2)</button><small class="center">(since two “Incomplete ID” errors were resolved)</small></div></aside>
+      </div>
+    </section>
+
+    <section class="screen" id="missing">
+      <div class="page-title-row"><h1>Missing Records</h1><div class="stage-progress"><span></span><b>Stage 2: Validation &amp; Review<small>(3 Issues Found)</small></b><i></i></div></div>
+      <div class="workspace-grid">
+        <article class="card table-card"><h2 class="padded-title">Missing Records &amp; Unresolved Issues</h2><label class="filter-label">Error Type: <select id="missingFilter"><option value="all">Show All Issues</option><option value="duplicate">Duplicate Record</option><option value="id">ID Issues</option><option value="hours">Extreme Hours</option></select></label><div class="table-scroll missing-table"><table><thead><tr><th>Error Type<br>(Filtered: All)</th><th>Source<br>Problems)</th><th>Reported Student<br>(Name/Email)</th><th>Logged Duration<br>(Unfiltered)</th><th>System Lookup<br>Status</th><th>Manual<br>Notes/Tags</th></tr></thead><tbody id="missingRows"></tbody></table></div></article>
+        <aside class="card tools-panel"><h2>Cleaning Tools &amp; Reference</h2><div class="panel-body"><h3>Quick Actions:</h3><button class="wide-action">[Automated Duplicate Merge]</button><button class="wide-action">[Verify AM/PM Stamps]</button><button class="wide-action">[Verify Fund Actions]</button><hr><div class="info-title">External Data Source Panel</div><p>Quickly launch lookups into external systems like SIS or Cranium Cafe.</p></div></aside>
+      </div>
+    </section>
+
+    <section class="screen" id="export">
+      <div class="page-title-row"><h1>Missing Records</h1><div class="stage-progress"><span></span><b>Stage 2: Validation &amp; Review<small class="green">(3 Issues Found)</small></b><i></i></div></div>
+      <div class="workspace-grid">
+        <article class="card table-card"><div class="card-header"><h2>Cleaned Data Export Preview: Fall 2026 Cycle</h2><span class="download-icon">♧</span></div><h3 class="preview-count">Previewing 14,320 Cleaned Records (0 Anomalies Remaining)</h3><div class="table-scroll export-table"><table><thead><tr><th>Student ID</th><th>Summed Hours (Decimals)</th></tr></thead><tbody id="exportRows"></tbody></table></div></article>
+        <aside class="card export-panel"><h2>Export Options</h2><div class="panel-body"><label>Select Destination:</label><select id="destination"><option>OIEA - Positive Attendance</option><option>Dashboard (Default)</option><option>A&amp;R - Enrollment Blocking File</option><option>A&amp;R - Positive Attendance File</option></select><button class="export-button" id="exportButton"><span>♧</span>Export Final Files</button><p id="exportMessage" class="export-message" role="status"></p></div></aside>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="importModal" hidden>
+    <section class="import-modal" role="dialog" aria-modal="true" aria-labelledby="importTitle">
+      <div class="modal-header">
+        <div><span class="modal-kicker">STAGE 1</span><h2 id="importTitle">Import Penji CSV</h2></div>
+        <button class="modal-close" id="closeImport" aria-label="Close import window">×</button>
+      </div>
+      <div class="modal-body">
+        <p>Select the original dirty, uncleaned <code>.csv</code> export from Penji. The file stays in your browser and is not uploaded to a server.</p>
+        <input type="file" id="penjiFile" accept=".csv,text/csv" hidden>
+        <button class="file-drop" id="choosePenjiFile">
+          <span class="upload-symbol">⇧</span><strong>Choose Penji CSV File</strong><small>Only .csv files are accepted</small>
+        </button>
+        <div class="selected-file" id="selectedFile" hidden>
+          <span class="file-icon">CSV</span>
+          <div><strong id="selectedFileName"></strong><small id="selectedFileDetails"></small></div>
+          <button id="replaceFile">Replace</button>
+        </div>
+        <div class="import-error" id="importError" role="alert"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="secondary" id="cancelImport">Cancel</button>
+        <button class="primary" id="confirmImport" disabled>Import &amp; Run Validation</button>
+      </div>
+    </section>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
