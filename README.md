@@ -1,6 +1,5 @@
 # ELAC Connect — Four-Screen Prototype
 
-This is a dependency-free HTML/CSS/JavaScript prototype based on the four supplied screenshots.
 
 ## Run it in VS Code
 
