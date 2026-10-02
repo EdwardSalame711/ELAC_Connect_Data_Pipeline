@@ -113,4 +113,20 @@
 .fix-hours:hover{background:#24527a}
 .delete-record:hover{background:#872a27}
 
-.export-button{font-size:34px;font-weight:700;letter-spacing:.02em;line-height:1.15;text-transform:uppercase}
+.export-button{font-size:29px;font-weight:700;letter-spacing:.02em;line-height:1.15;text-transform:uppercase}
+
+.topbar{height:66px}
+.app-shell{padding-top:66px}
+.breadcrumb{height:38px;padding:8px 28px;font-size:19px}
+
+@media(max-width:1800px){
+  .topbar{height:66px}
+  .app-shell{padding-top:66px}
+  .breadcrumb{height:38px;padding:8px 24px;font-size:18px}
+}
+
+@media(max-width:760px){
+  .topbar{height:58px}
+  .app-shell{padding-top:58px}
+  .breadcrumb{height:auto;padding:8px 14px;font-size:17px}
+}
