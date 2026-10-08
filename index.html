@@ -1,122 +1,1519 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ELAC Connect: Data Pipeline</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Team Rocket's ELAC Reading & Tutoring Center human-centered design project hub and team charter.">
+  <title>Team Rocket | ELAC Project Hub</title>
+
+  <!-- Space Grotesk is loaded from Google Fonts. The fallbacks keep the page readable offline. -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="import-modal.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* =========================================================
+       1. DESIGN TOKENS — change these values to restyle the page
+       ========================================================= */
+    :root {
+      --slate-950: #172033;
+      --slate-900: #202a44;
+      --slate-800: #293653;
+      --blue-700: #3155a6;
+      --blue-600: #4169c1;
+      --blue-500: #6787d4;
+      --blue-100: #eaf0ff;
+      --gold-500: #f0b429;
+      --gold-100: #fff7dc;
+      --steel-700: #475569;
+      --steel-500: #64748b;
+      --steel-300: #cbd5e1;
+      --steel-200: #e2e8f0;
+      --steel-100: #f1f5f9;
+      --white: #ffffff;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --shadow: 0 18px 50px rgba(23, 32, 51, 0.11);
+      --page-width: 1120px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
+    }
+
+    body {
+      margin: 0;
+      color: var(--slate-950);
+      background:
+        radial-gradient(circle at 92% 4%, rgba(65, 105, 193, 0.14), transparent 27rem),
+        linear-gradient(180deg, #f7f9fd 0%, var(--steel-100) 42%, #edf2f8 100%);
+      font-family: "Space Grotesk", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    a { color: var(--blue-600); }
+    a:hover { color: var(--slate-900); }
+    a:focus-visible {
+      outline: 3px solid var(--blue-500);
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    .skip-link {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 100;
+      padding: 10px 14px;
+      color: var(--white);
+      background: var(--slate-950);
+      border-radius: 8px;
+      transform: translateY(-150%);
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    /* =========================================================
+       2. TOP NAVIGATION
+       ========================================================= */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      color: var(--white);
+      background: rgba(23, 32, 51, 0.96);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-wrap {
+      width: min(calc(100% - 32px), var(--page-width));
+      min-height: 66px;
+      margin-inline: auto;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      flex: 0 0 auto;
+      color: var(--white);
+      font-weight: 700;
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 34px;
+      aspect-ratio: 1;
+      place-items: center;
+      background: var(--blue-500);
+      border-radius: 10px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .nav-links::-webkit-scrollbar { display: none; }
+    .nav-links a {
+      padding: 8px 10px;
+      color: #dce4ef;
+      border-radius: 7px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .nav-links a:hover { color: var(--white); background: rgba(255, 255, 255, 0.09); }
+    .nav-links a.nav-link--project { color: #7fc1ff; }
+    .nav-links a.nav-link--project:hover { color: #a9d5ff; background: rgba(255, 255, 255, 0.09); }
+    .nav-links a.nav-link--highlight { color: #ff4d4d; }
+    .nav-links a.nav-link--highlight:hover { color: #ff7373; background: rgba(255, 255, 255, 0.09); }
+
+    /* =========================================================
+       3. HERO
+       ========================================================= */
+  .hero {
+      color: var(--white);
+      background-color: #1c2638;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+    }
+
+    .hero-inner {
+      position: relative;
+      width: min(calc(100% - 32px), var(--page-width));
+      margin-inline: auto;
+
+      /* Aligns and restricts the background image to the max-width of the site */
+      background-image: url('images/Husky_Rocket-sm.jpeg');
+      background-position: right center;
+      background-size: cover; /* Use '100% 100%' if you want to force-stretch it to the exact bounds */
+      background-repeat: no-repeat;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: #c6d5ff;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 780px;
+      margin: 0;
+      font-size: clamp(2.5rem, 8vw, 5.25rem);
+      line-height: 0.98;
+      letter-spacing: -0.055em;
+    }
+
+    .hero-summary {
+      max-width: 640px;
+      margin: 24px 0 30px;
+      color: #dce4ef;
+      font-size: clamp(1rem, 2vw, 1.18rem);
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .meta li {
+      padding: 7px 12px;
+      color: #eef1ff;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-weight: 500;
+    }
+
+    /* =========================================================
+       4. CONTENT AND CARDS
+       ========================================================= */
+    main {
+      width: min(calc(100% - 32px), var(--page-width));
+      margin: 0 auto;
+      padding: 56px 0 72px;
+    }
+
+    .section {
+      margin-bottom: 56px;
+      scroll-margin-top: 90px;
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .section-number {
+      display: grid;
+      width: 42px;
+      aspect-ratio: 1;
+      place-items: center;
+      color: var(--white);
+      background: var(--blue-600);
+      border-radius: 11px;
+      font-size: 0.84rem;
+      font-weight: 700;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(1.45rem, 4vw, 2rem);
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+    }
+
+    .section-kicker {
+      margin: 3px 0 0;
+      color: var(--steel-500);
+      font-size: 0.88rem;
+      font-weight: 500;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .grid--members { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .card {
+      padding: 24px;
+      background: var(--white);
+      border: 1px solid var(--steel-200);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 1px 2px rgba(23, 32, 51, 0.03);
+    }
+
+    .card--featured {
+      grid-column: 1 / -1;
+      border-top: 4px solid var(--blue-600);
+      box-shadow: var(--shadow);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      color: var(--slate-900);
+      font-size: 1rem;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+    }
+    .card p { margin: 0; color: var(--steel-700); }
+
+    /* Client overview */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .overview-card {
+      position: relative;
+      height: 175px;
+      padding: 24px 24px 24px 78px;
+      overflow-x: hidden;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-color: var(--steel-300) transparent;
+      scrollbar-width: thin;
+    }
+    .overview-card::-webkit-scrollbar { width: 6px; }
+    .overview-card::-webkit-scrollbar-track { background: transparent; }
+    .overview-card::-webkit-scrollbar-thumb {
+      background: var(--steel-300);
+      border-radius: 999px;
+    }
+    .overview-icon {
+      position: absolute;
+      top: 24px;
+      left: 22px;
+      display: grid;
+      width: 40px;
+      aspect-ratio: 1;
+      place-items: center;
+      color: var(--blue-700);
+      background: var(--blue-100);
+      border-radius: 11px;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+    .overview-card h3 { margin-bottom: 7px; }
+    .overview-card--challenge { border-left: 4px solid var(--gold-500); }
+    .overview-card--challenge .overview-icon { color: #7a5600; background: var(--gold-100); }
+
+    /* Project stakeholders */
+    .stakeholder-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .stakeholder-card {
+      position: relative;
+      display: flex;
+      min-height: 390px;
+      flex-direction: column;
+      padding: 26px;
+      overflow: hidden;
+      background: linear-gradient(145deg, #ffffff, #eef3ff);
+      border: 1px solid #dce5fb;
+      border-radius: 24px;
+      box-shadow: 0 14px 36px rgba(23, 32, 51, 0.09);
+      isolation: isolate;
+    }
+    .stakeholder-card::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      top: -62px;
+      right: -56px;
+      width: 155px;
+      aspect-ratio: 1;
+      background: rgba(103, 135, 212, 0.16);
+      border-radius: 50%;
+    }
+    .stakeholder-card:nth-child(2) {
+      background: linear-gradient(145deg, #ffffff, #fff6e5);
+      border-color: #f5dfac;
+    }
+    .stakeholder-card:nth-child(2)::before { background: rgba(240, 180, 41, 0.18); }
+    .stakeholder-card:nth-child(3) {
+      background: linear-gradient(145deg, #ffffff, #eaf9f6);
+      border-color: #cce9e2;
+    }
+    .stakeholder-card:nth-child(3)::before { background: rgba(51, 160, 139, 0.16); }
+    .stakeholder-avatar {
+      display: grid;
+      width: 64px;
+      aspect-ratio: 1;
+      margin-bottom: 22px;
+      place-items: center;
+      color: var(--white);
+      background: linear-gradient(135deg, var(--blue-700), var(--blue-500));
+      border: 4px solid rgba(255, 255, 255, 0.82);
+      border-radius: 22px;
+      box-shadow: 0 9px 20px rgba(49, 85, 166, 0.22);
+      font-size: 1.15rem;
+      font-weight: 800;
+      transform: rotate(-3deg);
+    }
+    .stakeholder-card:nth-child(2) .stakeholder-avatar {
+      color: #523900;
+      background: linear-gradient(135deg, #ffd978, var(--gold-500));
+      box-shadow: 0 9px 20px rgba(193, 132, 1, 0.20);
+      transform: rotate(3deg);
+    }
+    .stakeholder-card:nth-child(3) .stakeholder-avatar {
+      background: linear-gradient(135deg, #237d6d, #52bda9);
+      box-shadow: 0 9px 20px rgba(35, 125, 109, 0.20);
+    }
+    .stakeholder-card h3 {
+      margin: 0 0 5px;
+      color: var(--slate-900);
+      font-size: 1.3rem;
+      letter-spacing: -0.02em;
+    }
+    .stakeholder-role { margin: 0 0 12px; color: var(--steel-500); font-size: 0.87rem; font-weight: 600; }
+    .stakeholder-tag {
+      display: inline-flex;
+      padding: 6px 10px;
+      color: var(--blue-700);
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid rgba(49, 85, 166, 0.18);
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+    }
+    .stakeholder-description {
+      margin: 16px 0 0;
+      color: var(--steel-700);
+      font-size: 0.9rem;
+      line-height: 1.55;
+    }
+    .stakeholder-context {
+      margin: 16px 0 0;
+      padding: 13px 14px;
+      color: var(--steel-700);
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(100, 116, 139, 0.14);
+      border-radius: 12px;
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+    .stakeholder-context strong { color: var(--slate-900); }
+    .persona-panels {
+      display: grid;
+      gap: 8px;
+      margin-top: 18px;
+    }
+    .persona-panel {
+      background: rgba(255, 255, 255, 0.82);
+      border: 1px solid rgba(100, 116, 139, 0.16);
+      border-radius: 11px;
+      overflow: hidden;
+    }
+    .persona-panel summary {
+      position: relative;
+      padding: 11px 38px 11px 13px;
+      color: var(--slate-900);
+      cursor: pointer;
+      font-size: 0.83rem;
+      font-weight: 700;
+      list-style: none;
+    }
+    .persona-panel summary::-webkit-details-marker { display: none; }
+    .persona-panel summary::after {
+      content: "+";
+      position: absolute;
+      top: 50%;
+      right: 13px;
+      color: var(--blue-700);
+      font-size: 1.05rem;
+      transform: translateY(-50%);
+    }
+    .persona-panel[open] summary::after { content: "−"; }
+    .persona-panel ul {
+      margin: 0;
+      padding: 0 16px 14px 30px;
+      color: var(--steel-700);
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+    .persona-panel li + li { margin-top: 7px; }
+
+    /* Consolidated team charter accordions */
+    .accordion-stack { display: grid; gap: 12px; }
+    .accordion {
+      background: var(--white);
+      border: 1px solid var(--steel-200);
+      border-radius: var(--radius-md);
+      box-shadow: 0 8px 28px rgba(23, 32, 51, 0.06);
+      overflow: hidden;
+    }
+    .accordion[open] { border-color: #c8d5f5; box-shadow: var(--shadow); }
+    .accordion summary {
+      position: relative;
+      display: flex;
+      min-height: 66px;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 58px 16px 20px;
+      color: var(--slate-900);
+      cursor: pointer;
+      font-size: 1.02rem;
+      font-weight: 700;
+      list-style: none;
+    }
+    .accordion summary::-webkit-details-marker { display: none; }
+    .accordion summary::after {
+      content: "+";
+      position: absolute;
+      right: 20px;
+      display: grid;
+      width: 30px;
+      aspect-ratio: 1;
+      place-items: center;
+      color: var(--blue-700);
+      background: var(--blue-100);
+      border-radius: 50%;
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+    .accordion[open] summary::after { content: "−"; }
+    .accordion summary:hover { background: #f8faff; }
+    .accordion-label {
+      display: grid;
+      width: 34px;
+      aspect-ratio: 1;
+      place-items: center;
+      color: var(--white);
+      background: var(--blue-600);
+      border-radius: 9px;
+      font-size: 0.74rem;
+    }
+    .accordion-content { padding: 0 20px 20px; border-top: 1px solid var(--steel-100); }
+    .accordion-content > .grid,
+    .accordion-content > .grid--members,
+    .accordion-content > .process-list { margin-top: 18px; }
+    .accordion-content .card { padding: 18px; box-shadow: none; }
+    .accordion-content .card--featured { border-top-width: 1px; }
+    .process-info-accordion { margin: 0 0 20px; }
+    .process-info-accordion .accordion-content { padding-top: 18px; }
+    .process-info-accordion h3 {
+      margin: 0 0 8px;
+      color: var(--blue-700);
+      font-size: 1rem;
+    }
+    .process-info-accordion p { margin: 0 0 18px; color: var(--steel-700); }
+    .process-info-steps { margin: 0; padding-left: 1.4rem; color: var(--steel-700); }
+    .process-info-steps > li + li { margin-top: 8px; }
+    .process-info-substeps { margin: 8px 0 0; padding-left: 0; list-style: none; }
+    .process-info-substeps li + li { margin-top: 6px; }
+
+    .member-card { min-width: 0; }
+    .member-initial {
+      display: grid;
+      width: 42px;
+      aspect-ratio: 1;
+      margin-bottom: 16px;
+      place-items: center;
+      color: var(--blue-600);
+      background: var(--blue-100);
+      border-radius: 50%;
+      font-weight: 700;
+    }
+    .member-card h3 { font-size: 1.05rem; }
+    .contact {
+      display: block;
+      width: fit-content;
+      max-width: 100%;
+      margin-top: 6px;
+      overflow-wrap: anywhere;
+      font-size: 0.82rem;
+      font-weight: 500;
+    }
+
+    .process-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: process;
+    }
+    .process-list li {
+      position: relative;
+      padding: 0 0 22px 46px;
+      counter-increment: process;
+    }
+    .process-list li:not(:last-child)::before {
+      content: "";
+      position: absolute;
+      top: 32px;
+      bottom: 2px;
+      left: 15px;
+      width: 2px;
+      background: var(--steel-200);
+    }
+    .process-list li::after {
+      content: counter(process);
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: grid;
+      width: 32px;
+      aspect-ratio: 1;
+      place-items: center;
+      color: var(--white);
+      background: var(--blue-600);
+      border-radius: 50%;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .process-list strong { display: block; margin-bottom: 3px; color: var(--slate-900); }
+    .process-list span { color: var(--steel-700); }
+
+    /* Permanent project goal and scope */
+    .scope-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .scope-card {
+      padding: 24px;
+      background: var(--white);
+      border: 1px solid var(--steel-200);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 8px 28px rgba(23, 32, 51, 0.06);
+    }
+    .scope-card--wide { grid-column: 1 / -1; }
+    .scope-card--goal {
+      color: var(--white);
+      background: linear-gradient(135deg, var(--slate-900), #304679);
+      border: 0;
+      box-shadow: var(--shadow);
+    }
+    .scope-card h3 {
+      margin: 0 0 10px;
+      color: var(--slate-900);
+      font-size: 1.08rem;
+      line-height: 1.3;
+    }
+    .scope-card--goal h3 { color: #cbd7ff; }
+    .scope-card p { margin: 0; color: var(--steel-700); }
+    .scope-card--goal p { color: var(--white); font-size: 1.04rem; }
+    .scope-card ul { margin: 0; padding-left: 1.2rem; color: var(--steel-700); }
+    .scope-card li + li { margin-top: 8px; }
+    .scope-columns {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+    }
+    .scope-columns h4 {
+      margin: 0 0 8px;
+      color: var(--blue-700);
+      font-size: 0.92rem;
+    }
+
+    /* Permanent process-flow diagram */
+    .process-diagram-frame {
+      margin: 0;
+      padding: 10px;
+      overflow-x: auto;
+      background: var(--white);
+      border: 1px solid var(--steel-200);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+    .process-diagram {
+      display: block;
+      width: 100%;
+      min-width: 900px;
+      height: auto;
+      border-radius: 10px;
+    }
+    .process-diagram-trigger {
+      display: block;
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      cursor: zoom-in;
+    }
+    .process-lightbox {
+      width: 100vw;
+      height: 100vh;
+      max-width: none;
+      max-height: none;
+      margin: 0;
+      padding: 56px 24px 24px;
+      overflow: hidden;
+      border: 0;
+      background: rgba(10, 18, 32, 0.96);
+    }
+    .process-lightbox[open] {
+      display: grid;
+      place-items: center;
+    }
+    .process-lightbox::backdrop { background: rgba(10, 18, 32, 0.82); }
+    .process-lightbox-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      object-fit: contain;
+      border-radius: 10px;
+    }
+    .process-lightbox-close {
+      position: absolute;
+      top: 12px;
+      right: 18px;
+      width: 42px;
+      height: 42px;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      border-radius: 50%;
+      color: var(--white);
+      background: rgba(255, 255, 255, 0.12);
+      font-size: 1.8rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .process-lightbox-close:hover,
+    .process-lightbox-close:focus-visible { background: rgba(255, 255, 255, 0.24); }
+
+    /* Interview note form and saved entries */
+    .notes-intro { margin-bottom: 18px; }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+    .form-field { display: grid; gap: 7px; }
+    .form-field--wide { grid-column: 1 / -1; }
+    label { color: var(--slate-900); font-size: 0.88rem; font-weight: 700; }
+    input, textarea {
+      width: 100%;
+      padding: 11px 12px;
+      color: var(--slate-950);
+      background: var(--white);
+      border: 1px solid var(--steel-300);
+      border-radius: 8px;
+      font: inherit;
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    input:focus, textarea:focus {
+      outline: 3px solid rgba(83, 103, 183, 0.24);
+      border-color: var(--blue-600);
+    }
+    .form-actions, .notes-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 18px;
+    }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 9px 15px;
+      color: var(--white);
+      background: var(--blue-600);
+      border: 1px solid var(--blue-600);
+      border-radius: 8px;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .button:hover { background: var(--slate-900); border-color: var(--slate-900); }
+    .button--secondary { color: var(--slate-900); background: var(--white); border-color: var(--steel-300); }
+    .button--secondary:hover { color: var(--white); }
+    .button--danger { color: #9b1c1c; background: var(--white); border-color: #efb4b4; }
+    .button--danger:hover { color: var(--white); background: #9b1c1c; border-color: #9b1c1c; }
+    .storage-note { color: var(--steel-500); font-size: 0.82rem; }
+    .saved-notes {
+      display: grid;
+      height: 400px;
+      gap: 16px;
+      align-content: start;
+      margin-top: 18px;
+      padding: 14px;
+      overflow-y: scroll;
+      overscroll-behavior: contain;
+      background: #e9eef6;
+      border: 1px solid var(--steel-300);
+      border-radius: var(--radius-lg);
+      scrollbar-gutter: stable;
+    }
+    .saved-note { position: relative; padding-right: 225px; }
+    .saved-note h3 { margin-bottom: 3px; font-size: 1.12rem; }
+    .saved-note-meta { margin-bottom: 14px !important; color: var(--steel-500) !important; font-size: 0.84rem; }
+    .note-block { margin-top: 13px; }
+    .note-block strong { display: block; color: var(--slate-900); font-size: 0.82rem; }
+    .note-block p { white-space: pre-wrap; }
+    .saved-note-actions {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: grid;
+      width: 185px;
+      gap: 8px;
+    }
+    .saved-note-actions .button { min-height: 38px; padding: 7px 10px; font-size: 0.78rem; }
+    .empty-state {
+      padding: 32px;
+      color: var(--steel-500);
+      background: var(--white);
+      border: 1px dashed var(--steel-300);
+      border-radius: var(--radius-lg);
+      text-align: center;
+    }
+    .status-message { min-height: 1.4em; color: var(--blue-600); font-size: 0.84rem; font-weight: 600; }
+
+    footer {
+      padding: 28px 16px;
+      color: #dce4ef;
+      background: var(--slate-950);
+      text-align: center;
+      font-size: 0.88rem;
+    }
+
+    /* =========================================================
+       5. RESPONSIVE LAYOUT
+       ========================================================= */
+    @media (max-width: 900px) {
+      .grid--members { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .nav-wrap { align-items: flex-start; flex-direction: column; gap: 8px; padding: 12px 0; }
+      .nav-links { width: 100%; margin-left: 0; }
+      html { scroll-padding-top: 126px; }
+    }
+
+    @media (max-width: 620px) {
+      body { line-height: 1.6; }
+      .hero-inner { padding: 58px 0 52px; }
+      .hero-inner::after { display: none; }
+      main { padding-top: 40px; }
+      .section { margin-bottom: 44px; }
+      .grid, .grid--members, .overview-grid, .stakeholder-grid { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-field--wide { grid-column: auto; }
+      .scope-grid { grid-template-columns: 1fr; }
+      .scope-card--wide { grid-column: auto; }
+      .scope-columns { grid-template-columns: 1fr; }
+      .card { padding: 20px; }
+      .saved-note { padding-right: 20px; }
+      .saved-note-actions {
+        position: static;
+        display: flex;
+        width: auto;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+      .nav-links a { padding-left: 6px; padding-right: 6px; }
+      .overview-card { padding: 20px 20px 20px 72px; }
+      .overview-icon { top: 18px; left: 20px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+    }
+
+    @media print {
+      .site-header, .skip-link { display: none; }
+      body { background: var(--white); font-size: 11pt; }
+      .hero { color: var(--slate-950); background: var(--white); border-bottom: 2px solid var(--slate-950); }
+      .hero-inner { padding: 30px 0; }
+      .hero-summary, .eyebrow { color: var(--steel-700); }
+      .meta li { color: var(--slate-950); border-color: var(--steel-300); }
+      main { padding: 30px 0; }
+      .card { break-inside: avoid; box-shadow: none; }
+      .section { break-inside: avoid; }
+    }
+  </style>
 </head>
+
 <body>
-  <header class="topbar">
-    <button class="mobile-menu" id="menuButton" aria-label="Open navigation">☰</button>
-    <div class="topbar-brand">ELAC Connect: Data Pipeline</div>
-    <div class="topbar-actions"><span>East Los Angeles College</span></div>
+  <a class="skip-link" href="#main-content">Skip to project content</a>
+
+  <header class="site-header">
+    <nav class="nav-wrap" aria-label="Project sections">
+      <a class="brand" href="#top" aria-label="Team Rocket project home">
+        <span class="brand-mark" aria-hidden="true">TR</span>
+        <span>Team Rocket</span>
+      </a>
+      <div class="nav-links">
+        <a href="#client-overview" class="nav-link--project">Client Overview</a>
+        <a href="#project-goal-scope">Project Goal and Scope</a>
+        <a href="#personas">Personas</a>
+        <a href="#process-flow">Process Flow</a>
+        <a href="#interviews" class="nav-link--highlight">Interview Notes</a>
+        <a href="#team-charter">Team Charter</a>
+      </div>
+    </nav>
   </header>
 
-  <aside class="sidebar" id="sidebar">
-    <button class="logo" data-screen="dashboard" aria-label="ELAC dashboard">
-      <img src="assets/elac-logo.png" alt="East Los Angeles College Husky logo">
-    </button>
-    <nav>
-      <button class="nav-item active" data-screen="dashboard"><span>⌂</span>Dashboard</button>
-      <div class="nav-heading"><span>⌘</span>Data Pipeline <span class="chevron">⌃</span></div>
-      <button class="nav-sub import-trigger">Import Penji</button>
-      <button class="nav-sub" data-screen="validation">Validate</button>
-      <button class="nav-sub" data-screen="missing">Transform</button>
-      <button class="nav-item" data-screen="export"><span>▥</span>Reports</button>
-      <button class="nav-item"><span>⚙</span>Admin</button>
-    </nav>
-    <button class="stage-tile danger" data-screen="missing"><span>⊖</span> M. Records</button>
-    <button class="stage-tile success" data-screen="export"><span>✓</span> Data Export &amp;<br>Cleaned Data</button>
-  </aside>
+  <div class="hero" id="top">
+    <div class="hero-inner">
+      <p class="eyebrow">CIS 5040 · Human-Centered Design</p>
+      <h1>Team Rocket</h1>
+      <p class="hero-summary">Team Rocket's working space for the East Los Angeles College Reading &amp; Tutoring Center project—from client discovery and process mapping to project scope, interviews, and team agreements.</p>
+      <ul class="meta" aria-label="Charter details">
+        <li>Team: Team Rocket</li>
+        <li>Client: ELAC Reading &amp; Tutoring Center</li>
+        <li>Date: September 7, 2026</li>
+      </ul>
+    </div>
+  </div>
 
-  <main class="app-shell">
-    <div class="breadcrumb" id="breadcrumb">ELAC Connect: Data Pipeline</div>
-
-    <section class="screen active" id="dashboard">
-      <div class="page-title-row">
-        <h1>Positive Attendance Reporting: Fall 2026 Cycle</h1>
-        <div class="status-pill">System Status: All Systems Operational</div>
-      </div>
-      <article class="card pipeline-card">
-        <h2>Data Pipeline Overview</h2>
-        <div class="pipeline">
-          <button class="pipeline-step complete import-trigger"><span>⇧</span><b>1. Import Penji</b><small id="importStepStatus">Select dirty CSV file</small></button>
-          <i>→</i>
-          <button class="pipeline-step warning" data-screen="validation"><span>△</span><b>2. Automated Validation</b><small>(Warning - 3 Errors)</small></button>
-          <i>→</i>
-          <button class="pipeline-step pending" data-screen="missing"><span>⌘</span><b>3. Data Cleaning</b><small>(Pending)</small></button>
-          <i>→</i>
-          <button class="pipeline-step pending" data-screen="export"><span>◴</span><b>4. OIEA/A&amp;R Export</b><small>(Pending)</small></button>
+  <main id="main-content">
+    <section class="section" id="client-overview" aria-labelledby="client-overview-title">
+      <div class="section-heading">
+        <span class="section-number" aria-hidden="true">01</span>
+        <div>
+          <h2 id="client-overview-title">Client Overview</h2>
+          <p class="section-kicker">East Los Angeles College · Reading &amp; Tutoring Center</p>
         </div>
+      </div>
+
+      <div class="overview-grid">
+        <article class="card overview-card">
+          <span class="overview-icon" aria-hidden="true">01</span>
+          <h3>Client Background</h3>
+          <p>The project engagement centers on the reading and tutoring operations at East Los Angeles College (ELAC), supporting key administrative staff and lab directors like Maria Acosta.</p>
+        </article>
+        <article class="card overview-card">
+          <span class="overview-icon" aria-hidden="true">02</span>
+          <h3>Core Services &amp; Operations</h3>
+          <p>The reading center provides both in-person and virtual academic support sessions, utilizing tools like online chat systems (TalkTo) to connect students with tutors.</p>
+        </article>
+        <article class="card overview-card">
+          <span class="overview-icon" aria-hidden="true">03</span>
+          <h3>Data &amp; Tracking Workflow</h3>
+          <p>The center relies on attendance and scheduling platforms—historically transitioning through systems like ACE, Pisces, and currently Penji—to track student visits and compile positive attendance reports for institutional deans.</p>
+        </article>
+        <article class="card overview-card overview-card--challenge">
+          <span class="overview-icon" aria-hidden="true">04</span>
+          <h3>Current Challenges &amp; Bottlenecks</h3>
+          <p>Due to hardware limitations—such as barcode scanners failing to consistently read student IDs or ink quality issues on cards—the center maintains a hybrid workflow using manual paper sign-in logs to verify attendance data accuracy. Staff members spend dedicated weekly hours reviewing, filtering, and cleaning raw data entries to ensure compliance and correct reporting.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="project-goal-scope" aria-labelledby="project-goal-scope-title">
+      <div class="section-heading">
+        <span class="section-number" aria-hidden="true">02</span>
+        <div>
+          <h2 id="project-goal-scope-title">Project Goal and Scope</h2>
+          <p class="section-kicker">Define the project goal, boundaries, outcomes, and constraints</p>
+        </div>
+      </div>
+
+      <div class="scope-grid">
+        <article class="scope-card scope-card--wide scope-card--goal">
+          <h3>Project Goal</h3>
+          <p>Our project will help Monte Perez at East Los Angeles College capture positive attendance as accurately as possible across learning support services—both those actively collecting and reporting data and those not yet reporting. We will know we have succeeded when we develop an easy-to-use solution that identifies missing information and can also serve our sister colleges and other campuses using Penji.</p>
+        </article>
+
+        <article class="scope-card scope-card--wide">
+          <h3>Project Overview</h3>
+          <p>The project addresses the inefficiencies and manual reporting hurdles faced by campus tutoring and reading centers when tracking student attendance. Staff currently rely on a combination of Penji, legacy software, and manual paper sign-in logs because of hardware issues such as barcode scanner failures. The goal is to streamline attendance capture, data cleaning, and positive-attendance reporting for administrative stakeholders.</p>
+        </article>
+
+        <article class="scope-card">
+          <h3>Objectives</h3>
+          <ul>
+            <li>Eliminate dependency on error-prone paper logs for physical student check-ins.</li>
+            <li>Reduce weekly administrative hours spent manually cross-referencing, formatting, and filtering invalid student ID data.</li>
+            <li>Create seamless and accurate end-of-semester positive-attendance reporting for institutional deans and administrators.</li>
+          </ul>
+        </article>
+
+        <article class="scope-card">
+          <h3>Deliverables</h3>
+          <ul>
+            <li>A comprehensive user-experience and workflow analysis of current campus tutoring-center data processes.</li>
+            <li>Wireframes or system-requirement specifications for an optimized attendance-tracking and reporting workflow.</li>
+            <li>Documentation and meeting logs detailing client needs from stakeholders such as Nelly and Maria.</li>
+          </ul>
+        </article>
+
+        <article class="scope-card">
+          <h3>In Scope</h3>
+          <ul>
+            <li>Analyze front-desk check-in processes for both in-person and virtual online-chat sessions.</li>
+            <li>Address data-entry error management, including duplicate digits, invalid IDs, and incorrect timestamps.</li>
+            <li>Evaluate compliance requirements such as ADA-compliant communication tools.</li>
+          </ul>
+        </article>
+
+        <article class="scope-card">
+          <h3>Out of Scope</h3>
+          <ul>
+            <li>Replace district-wide hardware infrastructure, including purchasing expensive RFID student ID cards or new campus-wide scanners.</li>
+            <li>Manage back-end institutional database architecture outside the reading center's direct reporting tools.</li>
+          </ul>
+        </article>
+
+        <article class="scope-card scope-card--wide">
+          <h3>Constraints &amp; Assumptions</h3>
+          <div class="scope-columns">
+            <div>
+              <h4>Constraints</h4>
+              <ul>
+                <li>Limited budget for expensive hardware solutions.</li>
+                <li>Reliance on existing software ecosystems such as Penji.</li>
+                <li>Adherence to accessibility deadlines and ADA-compliance guidelines.</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Assumptions</h4>
+              <ul>
+                <li>Staff will continue to require verification safeguards to ensure accurate positive-attendance data despite hardware limitations.</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+      </div>
+
+    </section>
+
+    <section class="section" id="personas" aria-labelledby="personas-title">
+      <div class="section-heading">
+        <span class="section-number" aria-hidden="true">03</span>
+        <div>
+          <h2 id="personas-title">ELAC Stakeholder Personas</h2>
+          <p class="section-kicker">The people, responsibilities, and needs shaping the project</p>
+        </div>
+      </div>
+
+      <div class="stakeholder-grid">
+        <article class="stakeholder-card">
+          <span class="stakeholder-avatar" aria-hidden="true">NA</span>
+          <h3>Nelli Asatryan</h3>
+          <p class="stakeholder-role">Instructional Aide</p>
+          <span class="stakeholder-tag">Data Quality</span>
+          <p class="stakeholder-description">An instructional aide responsible for manually checking, cross-referencing, and cleaning raw data from Penji to ensure accurate positive-attendance reporting.</p>
+          <p class="stakeholder-context"><strong>Role / Context:</strong> Instructional Aide at the East Los Angeles College Language Lab.</p>
+          <div class="persona-panels">
+            <details class="persona-panel">
+              <summary>Goals</summary>
+              <ul>
+                <li>Produce an accurate, easy-to-read positive-attendance output that clearly presents each student ID number and session duration.</li>
+                <li>Use a system that automatically highlights incomplete data points for review.</li>
+              </ul>
+            </details>
+            <details class="persona-panel">
+              <summary>Frustrations</summary>
+              <ul>
+                <li>Rows are often duplicated or left blank.</li>
+                <li>Rows frequently have incomplete information, requiring cross-referencing with other systems to resolve them or potentially deleting them.</li>
+                <li>Incomplete or inaccurate entries must be found manually, and the current visible output makes that process slow.</li>
+              </ul>
+            </details>
+            <details class="persona-panel">
+              <summary>Representative Quote</summary>
+              <ul>
+                <li><em>“I have to go through each of these individually before I can download the CSV, and I see that it’s not entered, so I will have to do it manually.”</em></li>
+              </ul>
+            </details>
+            <details class="persona-panel">
+              <summary>What Success Looks Like</summary>
+              <ul>
+                <li>A system that reduces the manual labor and time required to cross-reference, sort, and correct inaccurate Penji data before it is reported to OIEA. This would remove recurring frustrations and save hours of work each reporting cycle.</li>
+              </ul>
+            </details>
+          </div>
+        </article>
+
+        <article class="stakeholder-card">
+          <span class="stakeholder-avatar" aria-hidden="true">MA</span>
+          <h3>Maria Acosta</h3>
+          <p class="stakeholder-role">Writing Center Director</p>
+          <span class="stakeholder-tag">Center Operations</span>
+          <p class="stakeholder-description">The director responsible for making the data-correction process as efficient and accurate as possible before reporting and final publication.</p>
+          <p class="stakeholder-context"><strong>Role / Context:</strong> Director of the East Los Angeles College Writing Center.</p>
+          <div class="persona-panels">
+            <details class="persona-panel">
+              <summary>Goals</summary>
+              <ul>
+                <li>Create a system with safeguards that removes incorrect IDs—such as phone numbers, student ID numbers, and email addresses—and corrects inaccurate hours.</li>
+                <li>Make manual data entry more accessible and simplify the process of creating rosters for the next phase.</li>
+              </ul>
+            </details>
+            <details class="persona-panel">
+              <summary>Frustrations</summary>
+              <ul>
+                <li>Penji makes some overrides difficult because of coding complexity and system limitations.</li>
+                <li>There is no current way to scan ID numbers as students check in, so desk staff must enter data after students sign in on paper.</li>
+                <li>Student ID numbers occasionally appear as invalid in Penji.</li>
+              </ul>
+            </details>
+            <details class="persona-panel">
+              <summary>Representative Quote</summary>
+              <ul>
+                <li><em>“I know it’s very old school, but it’s the only way for us to verify their student ID numbers.”</em></li>
+              </ul>
+            </details>
+            <details class="persona-panel">
+              <summary>What Success Looks Like</summary>
+              <ul>
+                <li>An efficient, effective system that reduces manual data entry and is quick and easy enough for students to use consistently. Success means cleaner data with fewer problems caused by student ID validation.</li>
+              </ul>
+            </details>
+          </div>
+        </article>
+
+        <article class="stakeholder-card">
+          <span class="stakeholder-avatar" aria-hidden="true">LC</span>
+          <h3>Laura Cruz-Atrian</h3>
+          <p class="stakeholder-role">Dean</p>
+          <span class="stakeholder-tag">State Reporting</span>
+          <p class="stakeholder-description">The office dean responsible for campus institutional research and submitting accurate final data for state reporting.</p>
+          <p class="stakeholder-context"><strong>Role / Context:</strong> Dean of the East Los Angeles College Office of Institutional Effectiveness and Advancement.</p>
+          <div class="persona-panels">
+            <details class="persona-panel">
+              <summary>Goals</summary>
+              <ul>
+                <li>Ensure all data reported to the state is accurate and reflects completed hours in the correct format.</li>
+                <li>Ensure the implemented review process remains accurate.</li>
+                <li>Receive data on time so students can be enrolled in tutoring sessions efficiently.</li>
+              </ul>
+            </details>
+            <details class="persona-panel">
+              <summary>Frustrations</summary>
+              <ul>
+                <li>Data is occasionally received late because of processing time, which slows student enrollment in tutoring sessions.</li>
+                <li>More urgent responsibilities arise during end-of-term reporting and compete with the time required for data submission.</li>
+              </ul>
+            </details>
+            <details class="persona-panel">
+              <summary>Representative Quote</summary>
+              <ul>
+                <li><em>“Every single tutoring session is important.”</em></li>
+              </ul>
+            </details>
+            <details class="persona-panel">
+              <summary>What Success Looks Like</summary>
+              <ul>
+                <li>A timely, accurate dataset for state reporting that requires less administrative work at every review level while maintaining the same expected accuracy. The new system should ease workflow burdens and support greater institutional effectiveness.</li>
+              </ul>
+            </details>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="process-flow" aria-labelledby="process-flow-title">
+      <div class="section-heading">
+        <span class="section-number" aria-hidden="true">04</span>
+        <div>
+          <h2 id="process-flow-title">Process Flow</h2>
+          <p class="section-kicker">Penji raw-data preparation and distribution workflow</p>
+        </div>
+      </div>
+
+      <details class="accordion process-info-accordion">
+        <summary><span class="accordion-label" aria-hidden="true">INFO</span>Diagram Information and Steps 1–18</summary>
+        <div class="accordion-content">
+          <h3>Diagram Information</h3>
+          <p>This workflow shows how staff validate and clean Penji utilization data, reconcile records against supporting sources, prepare the final file, and email it to Vanessa. Vanessa dispatches the file to A&amp;R for enrollment blocking and to the Dean Assistant for the Dean’s Office; the process ends after both recipients receive the file.</p>
+
+          <h3>Steps 1–18</h3>
+          <ol class="process-info-steps">
+            <li>Begin the process.</li>
+            <li>Open the required Penji tabs and supporting records.</li>
+            <li>Verify walk-ins and appointments against paper tutor logs, rosters, and Cranium Cafe or ConnexEd login records.</li>
+            <li>Correct out-of-bounds metrics, including invalid or inappropriate Zoom links.</li>
+            <li>Download the unvetted CSV file from Penji.</li>
+            <li>Scrub the CSV in Excel.
+              <ul class="process-info-substeps">
+                <li><strong>6.1.</strong> Verify IDs.</li>
+                <li><strong>6.2.</strong> Remove duplicate entries.</li>
+                <li><strong>6.3.</strong> Remove staff and test entries.</li>
+                <li><strong>6.4.</strong> Identify and correct inverted timestamps.</li>
+                <li><strong>6.5.</strong> Review and correct extreme hour values.</li>
+              </ul>
+            </li>
+            <li>Look up missing information in rosters using the individual’s email address or name.</li>
+            <li>Determine whether each row is resolvable and valid.</li>
+            <li>If a row is not resolvable or valid, delete it from the Excel file.</li>
+            <li>If a row is resolvable and valid, simplify the Math and Language Lab columns and calculate the summed decimal hours in Excel.</li>
+            <li>Compare the calculated totals with the Penji Dashboard Utilization graph.</li>
+            <li>Prepare the final file.</li>
+            <li>Send the final file to Vanessa by email.</li>
+            <li>Vanessa receives the final file.</li>
+            <li>Vanessa dispatches the file to both destinations.
+              <ul class="process-info-substeps">
+                <li><strong>15.1.</strong> Send the file to A&amp;R for enrollment blocking.</li>
+                <li><strong>15.2.</strong> Send the file to the Dean Assistant for the Dean’s Office.</li>
+              </ul>
+            </li>
+            <li>Confirm that A&amp;R has received the file.</li>
+            <li>Confirm that the Dean Assistant has received the file.</li>
+            <li>End the process.</li>
+          </ol>
+        </div>
+      </details>
+
+      <figure class="process-diagram-frame">
+        <button class="process-diagram-trigger" id="open-process-preview" type="button" aria-label="Open the process-flow diagram in a full-screen preview" title="Click to enlarge">
+          <img class="process-diagram" src="images/Blank diagram sm.jpg" alt="Penji raw-data generation process flow showing staff verification, file preparation, and distribution to Vanessa, Admissions and Records, and the Dean's Office">
+        </button>
+      </figure>
+
+      <dialog class="process-lightbox" id="process-preview" aria-label="Full-screen process-flow diagram preview">
+        <button class="process-lightbox-close" id="close-process-preview" type="button" aria-label="Close process-flow preview">×</button>
+        <img class="process-lightbox-image" src="images/Blank diagram sm.jpg" alt="Enlarged Penji raw-data generation process flow">
+      </dialog>
+    </section>
+
+    <section class="section" id="interviews" aria-labelledby="interviews-title">
+      <div class="section-heading">
+        <span class="section-number" aria-hidden="true">05</span>
+        <div>
+          <h2 id="interviews-title">Client Interview Notes</h2>
+          <p class="section-kicker">Record feedback and follow-up items from each meeting</p>
+        </div>
+      </div>
+
+      <article class="card card--featured notes-intro">
+        <form id="interview-form">
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="meeting-date">Meeting date</label>
+              <input id="meeting-date" name="meetingDate" type="date" required>
+            </div>
+            <div class="form-field">
+              <label for="participants">Participants</label>
+              <input id="participants" name="participants" type="text" placeholder="Names of people at the meeting" required>
+            </div>
+            <div class="form-field form-field--wide">
+              <label for="feedback">Client feedback and observations</label>
+              <textarea id="feedback" name="feedback" placeholder="What did the client say or demonstrate?" required></textarea>
+            </div>
+            <div class="form-field">
+              <label for="interview-decisions">Decisions made</label>
+              <textarea id="interview-decisions" name="decisions" placeholder="Decisions or agreements from the meeting"></textarea>
+            </div>
+            <div class="form-field">
+              <label for="action-items">Action items and next steps</label>
+              <textarea id="action-items" name="actionItems" placeholder="Tasks, owners, and follow-up dates"></textarea>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="button" type="submit">Save interview notes</button>
+            <button class="button button--secondary" type="reset">Clear form</button>
+            <span class="storage-note">Notes are saved in this browser on this device.</span>
+          </div>
+          <div class="status-message" id="status-message" role="status" aria-live="polite"></div>
+        </form>
       </article>
-      <div class="dashboard-grid">
-        <article class="card table-card">
-          <div class="card-header"><h2>“Needs Attention” Queue</h2><button class="primary" data-screen="validation">Resolve Errors</button></div>
-          <div class="table-scroll"><table><thead><tr><th>Error Type</th><th>Location (Center)</th><th>Details</th><th>Action Required</th></tr></thead><tbody id="attentionRows"></tbody></table></div>
-        </article>
-        <aside class="stats"><h2>Quick Stats Panel</h2><div class="stat-card">Total Students Tracked<strong>14,320</strong></div><div class="stat-card">Total Hours Logged<strong>98,500</strong></div><div class="stat-card gauge-card">Funding Compliance<div class="gauge"><span>86%</span></div><b>(Deadline in 14 Days)</b></div></aside>
+
+      <div class="notes-toolbar">
+        <h3 style="margin: 0; margin-right: auto;">Saved interviews</h3>
+        <button class="button button--secondary" id="download-notes" type="button">Download notes backup</button>
+      </div>
+      <div class="saved-notes" id="saved-notes" aria-live="polite"></div>
+    </section>
+
+    <section class="section" id="team-charter" aria-labelledby="team-charter-title">
+      <div class="section-heading">
+        <span class="section-number" aria-hidden="true">06</span>
+        <div>
+          <h2 id="team-charter-title">Team Charter</h2>
+          <p class="section-kicker">Team members and working agreements consolidated into expandable panels</p>
+        </div>
+      </div>
+
+      <div class="accordion-stack">
+        <details class="accordion" open>
+          <summary><span class="accordion-label" aria-hidden="true">01</span>Team Members &amp; Contacts</summary>
+          <div class="accordion-content">
+            <div class="grid grid--members">
+              <article class="card member-card">
+                <span class="member-initial" aria-hidden="true">SJ</span>
+                <h3>Stacio Jackson</h3>
+                <a class="contact" href="mailto:sjacks39@calstatela.edu">sjacks39@calstatela.edu</a>
+              </article>
+              <article class="card member-card">
+                <span class="member-initial" aria-hidden="true">VM</span>
+                <h3>Vanessa Meraz</h3>
+                <a class="contact" href="mailto:vmeraz@calstatela.edu">vmeraz@calstatela.edu</a>
+              </article>
+              <article class="card member-card">
+                <span class="member-initial" aria-hidden="true">JM</span>
+                <h3>Justice Mann</h3>
+                <a class="contact" href="mailto:jmann13@calstatela.edu">jmann13@calstatela.edu</a>
+              </article>
+              <article class="card member-card">
+                <span class="member-initial" aria-hidden="true">ES</span>
+                <h3>Edward Salame</h3>
+                <a class="contact" href="mailto:esalame@calstatela.edu">esalame@calstatela.edu</a>
+              </article>
+            </div>
+          </div>
+        </details>
+
+        <details class="accordion">
+          <summary><span class="accordion-label" aria-hidden="true">02</span>Shared Purpose</summary>
+          <div class="accordion-content">
+            <div class="grid">
+              <article class="card">
+                <h3>Goal</h3>
+                <p>We are trying to build an app that cleans the data extracted from Penji—the software ELAC uses in its tutoring centers—and produces two Excel files, one for OIEA and one for A&amp;R. By making positive-attendance reporting more automated, we hope to improve accuracy and support wider use by departments and programs.</p>
+              </article>
+              <article class="card">
+                <h3>What success looks like</h3>
+                <p>Building and installing the app on center computers, then creating a user manual and demonstration so others can use and maintain it.</p>
+              </article>
+            </div>
+          </div>
+        </details>
+
+        <details class="accordion">
+          <summary><span class="accordion-label" aria-hidden="true">03</span>Communication</summary>
+          <div class="accordion-content">
+            <div class="grid">
+              <article class="card"><h3>Platform</h3><p>Microsoft Teams and email.</p></article>
+              <article class="card"><h3>Response time</h3><p>Within 12 hours on weekdays or weekends.</p></article>
+              <article class="card card--featured"><h3>Meetings</h3><p>We are mostly available during the daytime because team members have nighttime classes. Typical meeting windows range from 12:00–2:00 p.m. or 5:00–6:00 p.m.</p></article>
+            </div>
+          </div>
+        </details>
+
+        <details class="accordion">
+          <summary><span class="accordion-label" aria-hidden="true">04</span>Decision-Making</summary>
+          <div class="accordion-content">
+            <div class="grid">
+              <article class="card"><h3>How decisions are made</h3><p>We act as a democracy and listen to every perspective.</p></article>
+              <article class="card"><h3>How disagreements are handled</h3><p>We draw on the team's psychology background and prior experience mediating group work.</p></article>
+            </div>
+          </div>
+        </details>
+
+        <details class="accordion">
+          <summary><span class="accordion-label" aria-hidden="true">05</span>Working Agreements</summary>
+          <div class="accordion-content">
+            <div class="grid">
+              <article class="card"><h3>Participation</h3><p>Contribute ideas and experiences, practice active listening, and complete assigned tasks.</p></article>
+              <article class="card"><h3>Accountability</h3><p>Reach out, listen, and offer help before making judgments.</p></article>
+              <article class="card card--featured"><h3>Deadlines</h3><p>Communicate frequently, track work closely, and make room for team members to care for their mental health.</p></article>
+            </div>
+          </div>
+        </details>
+
+        <details class="accordion">
+          <summary><span class="accordion-label" aria-hidden="true">06</span>Conflict Resolution</summary>
+          <div class="accordion-content">
+            <ol class="process-list">
+              <li><strong>Unresponsive teammate</strong><span>First send a text and an email. After exhausting reasonable ways to reach the person, contact the professor as a last resort.</span></li>
+              <li><strong>How concerns are raised</strong><span>Usually through email first.</span></li>
+              <li><strong>When to involve the instructor</strong><span>If team members cannot manage the conflict and project progress is significantly halted, involve the instructor.</span></li>
+            </ol>
+          </div>
+        </details>
+
+        <details class="accordion">
+          <summary><span class="accordion-label" aria-hidden="true">07</span>Success Metrics</summary>
+          <div class="accordion-content">
+            <div class="grid">
+              <article class="card"><h3>What will make us proud</h3><p>Not only earning an A, but also creating a system that remains a viable resource for years.</p></article>
+              <article class="card"><h3>Behaviors that define success</h3><p>Being understanding, communicating, sharing perspectives, and maintaining a positive, growth-oriented mindset.</p></article>
+            </div>
+          </div>
+        </details>
       </div>
     </section>
 
-    <section class="screen" id="validation">
-      <div class="page-title-row"><h1>Data Pipeline Queue</h1><div class="stage-progress"><span></span><b>Stage 2: Validation &amp; Review<small>(3 Issues Found)</small></b><i></i></div></div>
-      <div class="workspace-grid">
-        <article class="card table-card">
-          <div class="card-header"><h2>“Needs Attention” Records (Automated 1st Pass)</h2><button class="primary" id="resolveAll">Resolve Errors</button></div>
-          <label class="filter-label">Error Type: <select id="validationFilter"><option>Show Incomplete IDs</option><option>Show All Issues</option></select></label>
-          <div class="table-scroll validation-table"><table><thead><tr><th>Source<br>(Center)</th><th>Original Record<br>(Name/Email)</th><th>Error Flag</th><th>Suggested Fix</th></tr></thead><tbody id="validationRows"></tbody></table></div>
-        </article>
-        <aside class="card resolution-panel"><h2>Resolution Workspace</h2><div class="panel-body"><h3>Selected Record Details</h3><div class="compare"><div>Original Penji Data<strong>J. Doe<br>(jdoe@elac.edu)<br>Record ID:<br>(digits: 12345678)</strong></div><div>Cross-Reference<strong>J. Doe<br>(jdoe@elac.edu)<br><em>Correct ID:<br>123456789</em></strong></div></div><hr><div class="lookup-tabs"><b>[Roster Lookup]</b><span>[Cranium Cafe Lookup]</span><span>[Penji Historical]</span></div><div class="lookup-result"><b>jdoe@elac.edu</b><span>Found 1 Match</span><strong>Correct ID: 123456789</strong></div><button class="wide-action" id="updateRecords">Update Selected Records (2)</button><small class="center">(since two “Incomplete ID” errors were resolved)</small></div></aside>
-      </div>
-    </section>
-
-    <section class="screen" id="missing">
-      <div class="page-title-row"><h1>Missing Records</h1><div class="stage-progress"><span></span><b>Stage 2: Validation &amp; Review<small>(3 Issues Found)</small></b><i></i></div></div>
-      <div class="workspace-grid">
-        <article class="card table-card"><h2 class="padded-title">Missing Records &amp; Unresolved Issues</h2><label class="filter-label">Error Type: <select id="missingFilter"><option value="all">Show All Issues</option><option value="duplicate">Duplicate Record</option><option value="id">ID Issues</option><option value="hours">Extreme Hours</option></select></label><div class="table-scroll missing-table"><table><thead><tr><th>Error Type<br>(Filtered: All)</th><th>Source<br>Problems)</th><th>Reported Student<br>(Name/Email)</th><th>Logged Duration<br>(Unfiltered)</th><th>System Lookup<br>Status</th><th>Manual<br>Notes/Tags</th></tr></thead><tbody id="missingRows"></tbody></table></div></article>
-        <aside class="card tools-panel"><h2>Cleaning Tools &amp; Reference</h2><div class="panel-body"><h3>Quick Actions:</h3><button class="wide-action">[Automated Duplicate Merge]</button><button class="wide-action">[Verify AM/PM Stamps]</button><button class="wide-action">[Verify Fund Actions]</button><hr><div class="info-title">External Data Source Panel</div><p>Quickly launch lookups into external systems like SIS or Cranium Cafe.</p></div></aside>
-      </div>
-    </section>
-
-    <section class="screen" id="export">
-      <div class="page-title-row"><h1>Missing Records</h1><div class="stage-progress"><span></span><b>Stage 2: Validation &amp; Review<small class="green">(3 Issues Found)</small></b><i></i></div></div>
-      <div class="workspace-grid">
-        <article class="card table-card"><div class="card-header"><h2>Cleaned Data Export Preview: Fall 2026 Cycle</h2></div><h3 class="preview-count">Previewing 14,320 Cleaned Records (0 Anomalies Remaining)</h3><div class="table-scroll export-table"><table><thead><tr><th>Student ID</th><th>Summed Hours (Decimals)</th></tr></thead><tbody id="exportRows"></tbody></table></div></article>
-        <aside class="card export-panel"><h2>Export Options</h2><div class="panel-body"><label>Select Destination:</label><select id="destination"><option>OIEA - Positive Attendance</option><option>Dashboard (Default)</option><option>A&amp;R - Enrollment Blocking File</option><option>A&amp;R - Positive Attendance File</option></select><button class="export-button" id="exportButton">EXPORT FINAL .CSV FILE</button><p id="exportMessage" class="export-message" role="status"></p></div></aside>
-      </div>
-    </section>
   </main>
 
-  <div class="modal-backdrop" id="importModal" hidden>
-    <section class="import-modal" role="dialog" aria-modal="true" aria-labelledby="importTitle">
-      <div class="modal-header">
-        <div><span class="modal-kicker">STAGE 1</span><h2 id="importTitle">Import Penji CSV</h2></div>
-        <button class="modal-close" id="closeImport" aria-label="Close import window">×</button>
-      </div>
-      <div class="modal-body">
-        <p>Select the original dirty, uncleaned <code>.csv</code> export from Penji. The file stays in your browser and is not uploaded to a server.</p>
-        <input type="file" id="penjiFile" accept=".csv,text/csv" hidden>
-        <button class="file-drop" id="choosePenjiFile">
-          <span class="upload-symbol">⇧</span><strong>Choose Penji CSV File</strong><small>Only .csv files are accepted</small>
-        </button>
-        <div class="selected-file" id="selectedFile" hidden>
-          <span class="file-icon">CSV</span>
-          <div><strong id="selectedFileName"></strong><small id="selectedFileDetails"></small></div>
-          <button id="replaceFile">Replace</button>
-        </div>
-        <div class="import-error" id="importError" role="alert"></div>
-      </div>
-      <div class="modal-footer">
-        <button class="secondary" id="cancelImport">Cancel</button>
-        <button class="primary" id="confirmImport" disabled>Import &amp; Run Validation</button>
-      </div>
-    </section>
-  </div>
-  <script src="app.js"></script>
+  <footer>
+    <span>Team Rocket · ELAC Reading &amp; Tutoring Center · CIS 5040</span>
+  </footer>
+
+  <script>
+    /* Full-screen preview for the process-flow diagram. */
+    const processPreview = document.querySelector("#process-preview");
+    const openProcessPreview = document.querySelector("#open-process-preview");
+    const closeProcessPreview = document.querySelector("#close-process-preview");
+
+    openProcessPreview.addEventListener("click", () => processPreview.showModal());
+    closeProcessPreview.addEventListener("click", () => processPreview.close());
+    processPreview.addEventListener("click", (event) => {
+      if (event.target === processPreview) processPreview.close();
+    });
+
+    /* The interview log uses localStorage, which saves data in this browser. */
+    const storageKey = "teamRocketInterviewNotes";
+    const form = document.querySelector("#interview-form");
+    const notesContainer = document.querySelector("#saved-notes");
+    const statusMessage = document.querySelector("#status-message");
+    const downloadButton = document.querySelector("#download-notes");
+
+    function getNotes() {
+      try { return JSON.parse(localStorage.getItem(storageKey)) || []; }
+      catch (error) { return []; }
+    }
+
+    function saveNotes(notes) {
+      localStorage.setItem(storageKey, JSON.stringify(notes));
+    }
+
+    function addTextBlock(parent, heading, text) {
+      if (!text) return;
+      const block = document.createElement("div");
+      block.className = "note-block";
+      const label = document.createElement("strong");
+      label.textContent = heading;
+      const paragraph = document.createElement("p");
+      paragraph.textContent = text;
+      block.append(label, paragraph);
+      parent.append(block);
+    }
+
+    function formatNoteText(note, noteNumber) {
+      return [
+        "INTERVIEW NOTES " + noteNumber,
+        "Meeting date: " + note.meetingDate,
+        "Participants: " + note.participants,
+        "",
+        "CLIENT FEEDBACK AND OBSERVATIONS",
+        note.feedback,
+        "",
+        "DECISIONS MADE",
+        note.decisions || "None recorded.",
+        "",
+        "ACTION ITEMS AND NEXT STEPS",
+        note.actionItems || "None recorded."
+      ].join("\n");
+    }
+
+    function downloadTextFile(text, filename) {
+      const url = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 0);
+    }
+
+    function renderNotes() {
+      const notes = getNotes();
+      notesContainer.replaceChildren();
+      downloadButton.disabled = notes.length === 0;
+
+      if (notes.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "No interview notes have been saved yet.";
+        notesContainer.append(empty);
+        return;
+      }
+
+      notes.forEach((note, index) => {
+        const noteNumber = index + 1;
+        const formattedDate = new Date(note.meetingDate + "T00:00:00").toLocaleDateString(undefined, {
+          year: "numeric", month: "long", day: "numeric"
+        });
+        const article = document.createElement("article");
+        article.className = "card saved-note";
+        const title = document.createElement("h3");
+        title.textContent = "Interview Notes " + noteNumber;
+        const meta = document.createElement("p");
+        meta.className = "saved-note-meta";
+        meta.textContent = "Meeting date: " + formattedDate + " · Participants: " + note.participants;
+        article.append(title, meta);
+        addTextBlock(article, "Client feedback and observations", note.feedback);
+        addTextBlock(article, "Decisions made", note.decisions);
+        addTextBlock(article, "Action items and next steps", note.actionItems);
+
+        const actions = document.createElement("div");
+        actions.className = "saved-note-actions";
+
+        const download = document.createElement("button");
+        download.className = "button button--secondary";
+        download.type = "button";
+        download.textContent = "Download Interview Notes " + noteNumber + ".txt";
+        download.setAttribute("aria-label", "Download Interview Notes " + noteNumber + " as a text file");
+        download.addEventListener("click", () => {
+          downloadTextFile(formatNoteText(note, noteNumber), "Interview Notes " + noteNumber + ".txt");
+          statusMessage.textContent = "Interview Notes " + noteNumber + ".txt downloaded.";
+        });
+
+        const remove = document.createElement("button");
+        remove.className = "button button--danger";
+        remove.type = "button";
+        remove.textContent = "Delete";
+        remove.setAttribute("aria-label", "Delete Interview Notes " + noteNumber + " from " + formattedDate);
+        remove.addEventListener("click", () => {
+          if (confirm("Delete these interview notes? This cannot be undone.")) {
+            saveNotes(getNotes().filter((item) => item.id !== note.id));
+            renderNotes();
+            statusMessage.textContent = "Interview notes deleted.";
+          }
+        });
+        actions.append(download, remove);
+        article.append(actions);
+        notesContainer.append(article);
+      });
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const notes = getNotes();
+      notes.unshift({
+        id: Date.now(),
+        meetingDate: data.get("meetingDate"),
+        participants: data.get("participants").trim(),
+        feedback: data.get("feedback").trim(),
+        decisions: data.get("decisions").trim(),
+        actionItems: data.get("actionItems").trim()
+      });
+      saveNotes(notes);
+      form.reset();
+      renderNotes();
+      statusMessage.textContent = "Interview notes saved successfully.";
+    });
+
+    downloadButton.addEventListener("click", () => {
+      const notes = getNotes();
+      if (!notes.length) return;
+      const text = notes.map((note, index) => formatNoteText(note, index + 1))
+        .join("\n\n" + "-".repeat(60) + "\n\n");
+      downloadTextFile(text, "Team-Rocket-Client-Interview-Notes.txt");
+      statusMessage.textContent = "Notes backup downloaded.";
+    });
+
+    renderNotes();
+  </script>
 </body>
 </html>
